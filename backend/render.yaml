@@ -7,3 +7,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
+# Force Python version
+python:
+  version: 3.11.0
