@@ -185,7 +185,14 @@ def load_codes_df():
     """Load ICD-10 ED codes from Excel file or create sample data."""
     global codes_df, desc_lookup
 
+try:
     codes_df = load_codes(CODES_XLSX)
+    logger.info(f"Loaded {len(codes_df)} codes via load_codes from {CODES_XLSX}")
+except Exception as e:
+    logger.error(f"Loading real codes failed, falling back to sample: {e}")
+    codes_df = create_sample_codes()
+
+
 
 
     # Ensure description always exists
