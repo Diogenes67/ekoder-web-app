@@ -21,7 +21,15 @@ def load_codes(filepath: Path) -> pd.DataFrame:
     try:
         # Load the Excel file
         df = pd.read_excel(filepath)
-        
+        # Direct column renaming for your specific file
+        if 'ED Short' in df.columns:
+            df.rename(columns={
+                'ED Short': 'ED Short List code',
+                'Diagnosis': 'ED Short List Term',
+                'Descriptor': 'ED Short List Included conditions',
+                'Scale': 'Scale'
+            }, inplace=True)
+
         # Ensure required columns exist
         required_cols = [
             'ED Short List code',
