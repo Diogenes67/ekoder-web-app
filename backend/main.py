@@ -26,6 +26,8 @@ import openai
 import logging
 import os
 from dotenv import load_dotenv
+from ek_utils import load_codes
+
 
 # Load environment variables
 load_dotenv()
@@ -182,22 +184,23 @@ Answer:
 def load_codes_df():
     """Load ICD-10 ED codes from Excel file or create sample data."""
     global codes_df, desc_lookup
-    
+
     if CODES_XLSX.exists():
         try:
-            codes_df = pd.read_excel(CODES_XLSX)
-            logger.info(f"Loaded {len(codes_df)} codes from {CODES_XLSX}")
+            # Use our ek_utils.load_codes helper so columns get mapped correctly
+            codes_df = load_codes(CODES_XLSX)
+            logger.info(f"Loaded {len(codes_df)} codes via load_codes from {CODES_XLSX}")
         except Exception as e:
-            logger.error(f"Error loading codes file: {e}")
+            logger.error(f"Error loading codes via load_codes: {e}")
             codes_df = create_sample_codes()
     else:
         logger.warning(f"Codes file not found: {CODES_XLSX}")
         codes_df = create_sample_codes()
-    
-    # Ensure required columns exist
+
+    # Ensure description always exists
     if 'description' not in codes_df.columns:
         codes_df['description'] = codes_df.get('ED Short List Term', '')
-    
+
     # Build description lookup
     desc_lookup = dict(
         zip(
@@ -205,6 +208,7 @@ def load_codes_df():
             codes_df["ED Short List Included conditions"].fillna("")
         )
     )
+
 
 def create_sample_codes():
     """Create sample ED codes for demo."""
