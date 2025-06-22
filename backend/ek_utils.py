@@ -20,7 +20,7 @@ def load_codes(filepath: Path) -> pd.DataFrame:
     """
     try:
         # Load the Excel file
-        df = pd.read_excel(filepath)
+        df = pd.read_excel(filepath, engine='openpyxl')
         # Direct column renaming for your specific file
         if 'ED Short' in df.columns:
             df.rename(columns={
