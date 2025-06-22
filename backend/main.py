@@ -486,36 +486,36 @@ async def batch_process(files: List[BatchFileRequest]):
     """Process multiple files in batch."""
     results = []
     
-    for file_req in files:
-        try:
-            # Decode base64 content
-            content = base64.b64decode(file_req.content)
-            text = content.decode('utf-8', errors='ignore')
-            
-            # Process the note
-            result = process_note(text)
-            
-            # Build row for Excel
-        row = {"File": file_req.filename}
-        for i, v in enumerate(result["validated"][:5], 1):
-            # unpack (code, term, explanation, keyword_hits)
-            code, term, explanation, _ = v
+        for file_req in files:
+            try:
+                # Decode base64 content
+                content = base64.b64decode(file_req.content)
+                text = content.decode('utf-8', errors='ignore')
+                
+                # Process the note
+                result = process_note(text)
+                
+                # Build row for Excel
+                row = {"File": file_req.filename}
+                for i, v in enumerate(result["validated"][:5], 1):
+                    # unpack (code, term, explanation, keyword_hits)
+                    code, term, explanation, _ = v
 
-            row[f"Code {i}"]   = code
-            row[f"Reason {i}"] = explanation
+                    row[f"Code {i}"]   = code
+                    row[f"Reason {i}"] = explanation
 
-            # look up the Scale value
-            scale_match = codes_df.loc[
-                codes_df["ED Short List code"] == code, "Scale"
-            ]
-            row[f"Scale {i}"]  = int(scale_match.iloc[0]) if not scale_match.empty else 0
+                    # look up the Scale value
+                    scale_match = codes_df.loc[
+                        codes_df["ED Short List code"] == code, "Scale"
+                    ]
+                    row[f"Scale {i}"]  = int(scale_match.iloc[0]) if not scale_match.empty else 0
 
-        # now append the completed row
-        results.append(row)
-            
-        except Exception as e:
-            logger.error(f"Batch error for {file_req.filename}: {e}")
-            results.append({"File": file_req.filename, "Error": str(e)})
+                # now append the completed row
+                results.append(row)
+
+            except Exception as e:
+                logger.error(f"Batch error for {file_req.filename}: {e}")
+                results.append({"File": file_req.filename, "Error": str(e)})
     
     # Create Excel file
     df = pd.DataFrame(results)
