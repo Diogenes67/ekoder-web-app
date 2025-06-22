@@ -34,9 +34,9 @@ def load_codes(filepath: Path) -> pd.DataFrame:
         if missing_cols:
             # Try alternative column names
             alt_mappings = {
-                'ED Short List code': ['Code', 'ICD10', 'ICD-10 Code'],
-                'ED Short List Term': ['Description', 'Term', 'Short Description'],
-                'ED Short List Included conditions': ['Conditions', 'Included Conditions', 'Keywords'],
+                'ED Short List code': ['Code', 'ICD10', 'ICD-10 Code', 'ED Short'],
+                'ED Short List Term': ['Description', 'Term', 'Short Description', 'Diagnosis'],
+                'ED Short List Included conditions': ['Conditions', 'Included Conditions', 'Keywords', 'Descriptor'],
                 'Scale': ['Complexity', 'Level', 'Scale']
             }
             
