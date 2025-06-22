@@ -496,12 +496,22 @@ async def batch_process(files: List[BatchFileRequest]):
             result = process_note(text)
             
             # Build row for Excel
-            row = {"File": file_req.filename}
-            for i, v in enumerate(result["validated"][:5], 1):  # Top 5 codes
-                row[f"Code {i}"] = v["code"]
-                row[f"Scale {i}"] = v["scale"]
-            
-            results.append(row)
+        row = {"File": file_req.filename}
+        for i, v in enumerate(result["validated"][:5], 1):
+            # unpack (code, term, explanation, keyword_hits)
+            code, term, explanation, _ = v
+
+            row[f"Code {i}"]   = code
+            row[f"Reason {i}"] = explanation
+
+            # look up the Scale value
+            scale_match = codes_df.loc[
+                codes_df["ED Short List code"] == code, "Scale"
+            ]
+            row[f"Scale {i}"]  = int(scale_match.iloc[0]) if not scale_match.empty else 0
+
+        # now append the completed row
+        results.append(row)
             
         except Exception as e:
             logger.error(f"Batch error for {file_req.filename}: {e}")
